@@ -23,7 +23,6 @@ class MCgenerator {
 
   int N;  // numero estrazioni
   int Bins;
-  // TRandom3 rnd(0);  // per riempire h con numeri random
 
   TF1* function;  // puntatore??
   TH1D* h;
@@ -31,14 +30,11 @@ class MCgenerator {
  public:
   // costruttore
   MCgenerator(double k_val = 5.2, double teta_val = 1.8, double b_val = 0.2,
-              double x_min_val = 0, double x_max_val = 0.5 * TMath::Pi());
-
-  /*MCgenerator(int N_val, int N_bins, double x_min_val = 0,
-              double x_max_val = 0.5 * TMath::Pi());*/
+              double x_min_val = 0, double x_max_val = 0.5 * TMath::Pi(),
+              int N_val = 10000, int Bins_val = 200);
 
   TF1* GetFunction() const;
-  void CreateHistogram(const char* name = "h",
-                                    const char* title = "myHisto");
+  void CreateHistogram(const char* name = "h", const char* title = "myHisto");
   TH1D* GetHistogram() const;
   TH1D* Fillh();
   void DrawFunction() const;

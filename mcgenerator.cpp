@@ -6,14 +6,15 @@
 #include <vector>
 
 MCgenerator::MCgenerator(double k_val, double teta_val, double b_val,
-                         double x_min_val, double x_max_val)
+                         double x_min_val, double x_max_val, int N_val,
+                         int Bins_val)
     : k(k_val),
       teta(teta_val),
       b(b_val),
       x_min(x_min_val),
       x_max(x_max_val),
-      N(10000),
-      Bins(100) {
+      N(N_val),
+      Bins(Bins_val) {
   function =
       new TF1("myFunc", "TMath::Power(TMath::Cos([0] * x + [1]), 2) + [2]",
               x_min, x_max);
@@ -25,7 +26,7 @@ MCgenerator::MCgenerator(double k_val, double teta_val, double b_val,
 TF1* MCgenerator::GetFunction() const { return function; }
 
 void MCgenerator::CreateHistogram(const char* name, const char* title) {
-  h = new TH1D(name, title, 100, x_min, x_max);
+  h = new TH1D(name, title, Bins, x_min, x_max);
   h->SetLineColor(kBlue);
 }
 
@@ -48,20 +49,29 @@ TH1D* MCgenerator::Fillh() {
 void MCgenerator::DrawFunction() const {
   h->Scale(1.0 / h->Integral("width"));  // normalizza l'istogramma
 
-  TF1 f_norm("myFunc", "TMath::Power(TMath::Cos([0] * x + [1]), 2) + [2]",
-             x_min, x_max);
+  TF1 f_norm("myFunc", "TMath::Power(TMath::Cos([0]*x + [1]), 2) + [2]", x_min,
+             x_max);
   f_norm.SetParameter(0, k);
   f_norm.SetParameter(1, teta);
   f_norm.SetParameter(2, b);
   f_norm.SetLineColor(kRed);
 
   // Normalizza la funzione alla stessa area dell'istogramma
-  double integral_f = f_norm.Integral(x_min, x_max);
-  f_norm.SetParameter(0, f_norm.GetParameter(0) / integral_f);
+  // double integral_f = f_norm.Integral(x_min, x_max);
 
+  double integral_f = f_norm.Integral(x_min, x_max);
+  double scale_factor = h->Integral("width") / integral_f;
+
+  TF1 f_scaled("f_scaled",
+               "[0]*(TMath::Power(TMath::Cos([1]*x + [2]), 2) + [3])", x_min,
+               x_max);
+  f_scaled.SetParameter(0, scale_factor);
+  f_scaled.SetParameter(1, k);
+  f_scaled.SetParameter(2, teta);
+  f_scaled.SetParameter(3, b);
   TCanvas* canvas = new TCanvas("canvas", "Funzione vs Istogramma", 800, 600);
   h->Draw("HISTO");
-  f_norm.Draw("SAME");
+  f_scaled.Draw("SAME");
   canvas->Update();
   canvas->SaveAs("funzione.png");
 }
