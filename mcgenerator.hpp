@@ -2,6 +2,8 @@
 #define MCGENERATOR_HPP
 
 #include <TF1.h>
+#include <TGraph.h>        // Per TGraph (senza errori)
+#include <TGraphErrors.h>  // Per TGraphErrors (con barre di errore)
 #include <TH1F.h>
 #include <TMath.h>
 #include <TROOT.h>
@@ -29,15 +31,17 @@ class MCgenerator {
 
  public:
   // costruttore
-  MCgenerator(double k_val = 5.2, double teta_val = 1.8, double b_val = 0.2,
-              double x_min_val = 0, double x_max_val = 0.5 * TMath::Pi(),
-              int N_val = 10000, int Bins_val = 200);
+  MCgenerator(int N_val, int Bins_val, double k_val = 5.2,
+              double teta_val = 1.8, double b_val = 0.2, double x_min_val = 0,
+              double x_max_val = 0.5 * TMath::Pi());
 
   TF1* GetFunction() const;
   void CreateHistogram(const char* name = "h", const char* title = "myHisto");
   TH1D* GetHistogram() const;
   TH1D* Fillh();
-  void DrawFunction() const;
+  double GetRMS() const;
+  TGraphErrors* GraphMediaConErrore(int N_replicas);
+  void DrawFunction(const char* filename) const;
 };
 
 #endif

@@ -7,3 +7,8 @@ nel metodo drawfunction l'obbiettivo è generare dopo aver generato un istogramm
 4. double scale_factor = integral_h / integral_f; questo è il coefficiente moltiplicativo x rendere la funzione teorica confrontabile con l'istogramma (se la funzione ha area 2 e l’istogramma ha area 1, il fattore sarà 0.5 → abbassa la funzione)
 5. creo nuova funzione e la scalo per il fattore di scala appena ottenuto
 6. disegno h e f_scaled nello stesso canvas
+
+
+da fare
+- aggiungere alla "legenda" lo scarto quadratico medio
+- mettere a posto grafico errori-> normalizzarlo -> magari fare che non scrivo i valori, ma prendo gia dal grafico normalizzato (nn so se si capisce ma vabb)
