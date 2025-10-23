@@ -25,8 +25,17 @@ MCgenerator::MCgenerator(int N_val, int Bins_val, double k_val, double teta_val,
 TF1* MCgenerator::GetFunction() const { return function; }
 
 void MCgenerator::CreateHistogram(const char* name, const char* title) {
+  if (h) {
+    if (!h->TestBit(kCanDelete)) {
+      delete h;
+    }
+    h = nullptr;
+  }
+
+  // Creo un nuovo istogramma
   h = new TH1D(name, title, Bins, x_min, x_max);
   h->SetLineColor(kBlue);
+  h->SetDirectory(0);
 }
 
 TH1D* MCgenerator::GetHistogram() const { return h; }

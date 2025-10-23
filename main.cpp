@@ -12,7 +12,7 @@ int main() {
   TGraphErrors* graph = generate1.GraphMediaConErrore(100);  // 100 repliche
   TCanvas* c = new TCanvas("c_media", "Media con errore", 800, 600);
   graph->Draw("AP");
-  c->SaveAs("media_con_errore.png");
+  c->SaveAs("media_100histo.png");
 
   MCgenerator generate2(5000, 300);
   generate2.GetFunction();
