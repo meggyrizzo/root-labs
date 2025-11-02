@@ -26,21 +26,30 @@ class MCgenerator {
   int N;  // numero estrazioni
   int Bins;
 
-  TF1* function;  // puntatore??
-  TH1D* h;
+  TF1* function;  // puntatore ad una funzione
+  TH1D* h;        // histo
 
  public:
-  // costruttore
+  // costruttore, tutti i valori sono fissati tranne il numero di estrazioni e
+  // il numero di bin
   MCgenerator(int N_val, int Bins_val, double k_val = 5.2,
               double teta_val = 1.8, double b_val = 0.2, double x_min_val = 0,
               double x_max_val = 0.5 * TMath::Pi());
 
-  TF1* GetFunction() const;
+  TF1* GetFunction() const;  // per accedere alla funione private da fuori,
+                             // forse è superfluo...
   void CreateHistogram(const char* name = "h", const char* title = "myHisto");
-  TH1D* GetHistogram() const;
-  TH1D* Fillh();
-  double GetRMS() const;
-  TGraphErrors* GraphMediaConErrore(int N_replicas);
+  TH1D* GetHistogram() const;  // per accedere all'istogramma
+  TH1D* Fillh();               // riempe istogramma
+  double GetRMSD()
+      const;  // ritorna la radice quadrata della media degli scarti al quadrato
+  TGraphErrors* GraphMediaConErrore(
+      int N_replicas);  // esegue una simulazione mc per un numero elevato di
+                        // volte (N_replicas) e calcolare la media e
+                        // l'incertezza statistica dei conteggi in ciascun bin
+                        // dell'istogramma-> praticamente è la dev standard
+                        // della distribuzione delle medie campionarie dei
+                        // conteggi per bin
   void DrawFunction(const char* filename) const;
 };
 

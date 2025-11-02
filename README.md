@@ -11,4 +11,3 @@ nel metodo drawfunction l'obbiettivo è generare dopo aver generato un istogramm
 
 da fare
 - aggiungere alla "legenda" lo scarto quadratico medio
-- mettere a posto grafico errori-> normalizzarlo -> magari fare che non scrivo i valori, ma prendo gia dal grafico normalizzato (nn so se si capisce ma vabb)

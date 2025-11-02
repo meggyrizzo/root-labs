@@ -54,7 +54,7 @@ TH1D* MCgenerator::Fillh() {
   return h;
 }
 
-double MCgenerator::GetRMS() const {
+double MCgenerator::GetRMSD() const {
   double sum = 0.0;
   int n_bins = h->GetNbinsX();
 
@@ -83,7 +83,8 @@ TGraphErrors* MCgenerator::GraphMediaConErrore(int N_replicas) {
   }
 
   std::vector<double> x(Bins), y(Bins), ex(Bins, 0), ey(Bins);
-
+  double integral_sum = 0.0;
+  double bin_width = (x_max - x_min) / Bins;
   for (int i = 0; i < Bins; ++i) {
     double sum = 0, sum2 = 0;
     for (double v : bins[i]) {
@@ -97,8 +98,18 @@ TGraphErrors* MCgenerator::GraphMediaConErrore(int N_replicas) {
     x[i] = h->GetBinCenter(i + 1);
     y[i] = mean;
     ey[i] = stddev;
+    integral_sum += mean * bin_width;
   }
 
+  if (integral_sum > 0) {
+    double scale_factor = 1.0 / integral_sum;
+    for (int i = 0; i < Bins; ++i) {
+      y[i] *= scale_factor;   // Normalizza la media del bin (altezza)
+      ey[i] *= scale_factor;  // Normalizza l'errore del bin (l'incertezza)
+    }
+  }
+  
+  // crea grafico
   auto* graph = new TGraphErrors(Bins, &x[0], &y[0], &ex[0], &ey[0]);
   graph->SetTitle(
       "Media dei valori per bin con incertezza; x; Conteggio medio");
