@@ -10,7 +10,7 @@ int main() {
   generate1.Fillh();
   generate1.DrawFunction("function1.png");
 
-  TGraphErrors* graph = generate1.GraphMediaConErrore(100);  // 100 repliche
+  TGraphErrors* graph = generate1.GraphMeanWithError(100);  // 100 repliche
   TCanvas* c = new TCanvas("c_media", "Media con errore", 800, 600);
   graph->Draw("AP");
   c->SaveAs("incertezza_rigenerazion_histo.png");
@@ -29,5 +29,12 @@ int main() {
   generate3.CreateHistogram("h", "histo MonteCarlo");
   generate3.Fillh();
   generate3.DrawFunction("function3.png");
+
+  MCgenerator smeared(0, 100);  // N=0 perché non serve generare eventi
+  TGraphErrors* smear_graph = smeared.GraphBinSmeering(100);  // 100 repliche
+  TCanvas* c_smear = new TCanvas("c_smear", "Bin-smeering", 800, 600);
+  smear_graph->Draw("AP");
+  c_smear->SaveAs("bin_smeering.png");
+
   return 0;
 }

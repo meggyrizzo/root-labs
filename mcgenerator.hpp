@@ -43,13 +43,16 @@ class MCgenerator {
   TH1D* Fillh();               // riempe istogramma
   double GetRMSD()
       const;  // ritorna la radice quadrata della media degli scarti al quadrato
-  TGraphErrors* GraphMediaConErrore(
+  TGraphErrors* GraphMeanWithError(
       int N_replicas);  // esegue una simulazione mc per un numero elevato di
-                        // volte (N_replicas) e calcolare la media e
-                        // l'incertezza statistica dei conteggi in ciascun bin
-                        // dell'istogramma-> praticamente è la dev standard
-                        // della distribuzione delle medie campionarie dei
-                        // conteggi per bin
+  // volte (N_replicas) e calcolare la media e
+  // l'incertezza statistica dei conteggi in ciascun bin
+  // dell'istogramma-> praticamente è la dev standard
+  // della distribuzione delle medie campionarie dei
+  // conteggi per bin
+  
+  TGraphErrors* GraphBinSmeering(int N_replicas,
+                                              double smear_fraction = 0.05);
   void DrawFunction(const char* filename) const;
 };
 

@@ -13,7 +13,8 @@ MCgenerator::MCgenerator(int N_val, int Bins_val, double k_val, double teta_val,
       teta(teta_val),
       b(b_val),
       x_min(x_min_val),
-      x_max(x_max_val) {
+      x_max(x_max_val),
+       h(nullptr) {
   function =
       new TF1("myFunc", "TMath::Power(TMath::Cos([0] * x + [1]), 2) + [2]",
               x_min, x_max);
@@ -69,7 +70,7 @@ double MCgenerator::GetRMSD() const {
   return std::sqrt(sum / n_bins);
 }
 
-TGraphErrors* MCgenerator::GraphMediaConErrore(int N_replicas) {
+TGraphErrors* MCgenerator::GraphMeanWithError(int N_replicas) {
   std::vector<std::vector<double>> bins(Bins);
 
   for (int r = 0; r < N_replicas; ++r) {
@@ -115,6 +116,54 @@ TGraphErrors* MCgenerator::GraphMediaConErrore(int N_replicas) {
       "Media dei valori per bin con incertezza; x; Conteggio medio");
   graph->SetMarkerStyle(20);
   graph->SetLineColor(kBlue + 2);
+
+  return graph;
+}
+
+TGraphErrors* MCgenerator::GraphBinSmeering(int N_replicas, double smear_fraction) {
+  std::vector<std::vector<double>> bins(Bins);
+  double bin_width = (x_max - x_min) / Bins;
+
+  for (int r = 0; r < N_replicas; ++r) {
+    for (int i = 0; i < Bins; ++i) {
+      double x = x_min + (i + 0.5) * bin_width;
+      double val = function->Eval(x);
+      double smeared = gRandom->Gaus(val, smear_fraction * val);
+      bins[i].push_back(smeared);
+    }
+  }
+
+  std::vector<double> x(Bins), y(Bins), ex(Bins, 0), ey(Bins);
+  double integral_sum = 0.0;
+
+  for (int i = 0; i < Bins; ++i) {
+    double sum = 0, sum2 = 0;
+    for (double v : bins[i]) {
+      sum += v;
+      sum2 += v * v;
+    }
+    double mean = sum / N_replicas;
+    double stddev = std::sqrt(sum2 / N_replicas - mean * mean);
+
+    x[i] = x_min + (i + 0.5) * bin_width;
+    y[i] = mean;
+    ey[i] = stddev;
+    integral_sum += mean * bin_width;
+  }
+
+  // Normalizzazione
+  if (integral_sum > 0) {
+    double scale_factor = 1.0 / integral_sum;
+    for (int i = 0; i < Bins; ++i) {
+      y[i] *= scale_factor;
+      ey[i] *= scale_factor;
+    }
+  }
+
+  auto* graph = new TGraphErrors(Bins, &x[0], &y[0], &ex[0], &ey[0]);
+  graph->SetTitle("Bin-smeering: fluttuazione teorica; x; Conteggio medio");
+  graph->SetMarkerStyle(21);
+  graph->SetLineColor(kGreen + 2);
 
   return graph;
 }

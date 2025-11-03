@@ -11,3 +11,4 @@ nel metodo drawfunction l'obbiettivo è generare dopo aver generato un istogramm
 
 da fare
 - aggiungere alla "legenda" lo scarto quadratico medio
+- pto 4
