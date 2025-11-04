@@ -4,7 +4,7 @@
 #include <TF1.h>
 #include <TGraph.h>        // Per TGraph (senza errori)
 #include <TGraphErrors.h>  // Per TGraphErrors (con barre di errore)
-#include <TH1F.h>
+#include <TH1D.h>
 #include <TMath.h>
 #include <TROOT.h>
 #include <TRandom3.h>
@@ -23,11 +23,11 @@ class MCgenerator {
   double x_min;
   double x_max;
 
-  int N;  // numero estrazioni
-  int Bins;
+  int N;     // numero estrazioni
+  int Bins;  // numero bin
 
   TF1* function;  // puntatore ad una funzione
-  TH1D* h;        // histo
+  TH1D* h;        // puntatore ad histo
 
  public:
   // costruttore, tutti i valori sono fissati tranne il numero di estrazioni e
@@ -36,23 +36,31 @@ class MCgenerator {
               double teta_val = 1.8, double b_val = 0.2, double x_min_val = 0,
               double x_max_val = 0.5 * TMath::Pi());
 
+  ~MCgenerator();            // distruttore
+
+  
   TF1* GetFunction() const;  // per accedere alla funione private da fuori,
                              // forse è superfluo...
   void CreateHistogram(const char* name = "h", const char* title = "myHisto");
   TH1D* GetHistogram() const;  // per accedere all'istogramma
   TH1D* Fillh();               // riempe istogramma
+  TF1* GetNormalizedFunction() const;
   double GetRMSD()
       const;  // ritorna la radice quadrata della media degli scarti al quadrato
-  TGraphErrors* GraphMeanWithError(
-      int N_replicas);  // esegue una simulazione mc per un numero elevato di
-  // volte (N_replicas) e calcolare la media e
-  // l'incertezza statistica dei conteggi in ciascun bin
-  // dell'istogramma-> praticamente è la dev standard
-  // della distribuzione delle medie campionarie dei
-  // conteggi per bin
-  
-  TGraphErrors* GraphBinSmeering(int N_replicas,
-                                              double smear_fraction = 0.05);
+
+  // pto 3.2
+  TGraphErrors* GraphMeanWithError(int N_replicas);
+
+  // pto 3.3
+  TGraphErrors* GraphBinSmeering(int N_replicas, double smear_fraction = 0.05);
+
+  // pto 4(3.2)
+  TGraphErrors* GraphParamUncertainty_32(int N_replicas);
+
+  // pto 4(3.3)
+  TGraphErrors* GraphParamUncertainty_33(int N_replicas);
+
+  // pto 1-> disegna funzione ed istogramma a confronto in un unico file
   void DrawFunction(const char* filename) const;
 };
 
