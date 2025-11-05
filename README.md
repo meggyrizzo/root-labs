@@ -11,7 +11,7 @@ nel metodo drawfunction l'obbiettivo è generare dopo aver generato un istogramm
 
 da fare
 - aggiungere alla "legenda" lo scarto quadratico medio
-- creare file con funzioni media, dev std e normalizzazione funzione sicuro poi vedi se ne puoi mettere altre usate spesso
+- creare file con funzioni media, dev std
 - vedi se da 4 metodi ne riesci a fare due (TGraphErrors* GraphMeanWithError(int N_replicas);
 
   // pto 3.3

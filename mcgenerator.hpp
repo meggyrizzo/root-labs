@@ -49,8 +49,6 @@ class MCgenerator {
   void CreateHistogram(const char* name = "h", const char* title = "myHisto");
   TH1D* GetHistogram() const;  // per accedere all'istogramma
   TH1D* Fillh();               // riempe istogramma
-  double GetRMSD()
-      const;  // ritorna la radice quadrata della media degli scarti al quadrato
 
   // pto 3.2
   TGraphErrors* GraphMeanWithError(int N_replicas);

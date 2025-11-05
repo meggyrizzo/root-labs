@@ -23,7 +23,6 @@ MCgenerator::MCgenerator(int N_val, int Bins_val, double k_val, double teta_val,
       x_min(x_min_val),
       x_max(x_max_val),
       h(nullptr) {
-
   // imposto inceretzze sistematiche
   dk = 0.02 * k;
   dteta = 0.05 * teta;
@@ -71,30 +70,7 @@ TH1D* MCgenerator::Fillh() {
   return h;
 }
 
-double MCgenerator::GetRMSD() const {
-  double sum = 0.0;
-  int n_bins = h->GetNbinsX();
-
-  // normalizziamo la funzione per il confronto
-  TF1* f_norm = GetNormalizedFunction(k, teta, b, x_min, x_max);
-  // normalizziamo l'istogramma
-  TH1D* h_norm = (TH1D*)h->Clone("h_norm_temp");
-  h_norm->Scale(1.0 / h_norm->Integral("width"));
-
-  for (int i = 1; i <= n_bins; ++i) {
-    double x = h_norm->GetBinCenter(i);
-    double h_val = h_norm->GetBinContent(i);
-    double f_val = f_norm->Eval(x);
-    double diff = h_val - f_val;
-    sum += diff * diff;
-  }
-
-  delete f_norm;
-  delete h_norm;
-
-  return std::sqrt(sum / n_bins);
-}
-
+// pto 3.2
 TGraphErrors* MCgenerator::GraphMeanWithError(int N_replicas) {
   std::vector<std::vector<double>> bins(Bins);
 
@@ -104,7 +80,7 @@ TGraphErrors* MCgenerator::GraphMeanWithError(int N_replicas) {
     replica.Fillh();
     TH1D* h_replica = replica.GetHistogram();
 
-    // normalizza l'istogramma di replica a PDF
+    // normalizza l'istogramma di replica
     double integral = h_replica->Integral("width");
     if (integral == 0) integral = 1;
     h_replica->Scale(1.0 / integral);
@@ -130,41 +106,41 @@ TGraphErrors* MCgenerator::GraphMeanWithError(int N_replicas) {
     y[i] = mean;
     ey[i] = stddev;
   }
-
   // crea grafico
   auto* graph = new TGraphErrors(Bins, &x[0], &y[0], &ex[0], &ey[0]);
   graph->SetTitle("Incertezza da Rigenerazione (3.2); x; PDF media");
   graph->SetMarkerStyle(20);
   graph->SetLineColor(kBlue + 2);
-
   return graph;
 }
 
+// pto 3.3
 TGraphErrors* MCgenerator::GraphBinSmeering(int N_replicas) {
   std::vector<std::vector<double>> bins(Bins);
   double bin_width = (x_max - x_min) / Bins;
-
   // usiamo la funzione già normalizzata per il valore teorico
   TF1* f_norm = GetNormalizedFunction(k, teta, b, x_min, x_max);
-
   for (int r = 0; r < N_replicas; ++r) {
     for (int i = 0; i < Bins; ++i) {
       double x = x_min + (i + 0.5) * bin_width;
-      double val = f_norm->Eval(x); // valore teorico
+      double val = f_norm->Eval(x);  // valore teorico
 
       // calcolo incertezza statistica attesa per la pdf
       double sigma_stat_pdf = 0.0;
-            if (val > 0) { // evita la divisione per zero o sqrt di negativi
-                sigma_stat_pdf = std::sqrt(val / (N * bin_width)); // l'inceretzza statistica 
-            }
+      if (val > 0) {  // evita la divisione per zero o sqrt di negativi
+        sigma_stat_pdf =
+            std::sqrt(val / (N * bin_width));  // l'inceretzza statistica
+      }
 
-            // fluttua il valore teorico (val) con la sua incertezza statistica (sigma)
-            double smeared = gRandom->Gaus(val, sigma_stat_pdf);
-            bins[i].push_back(smeared);
+      // fluttua il valore teorico (val) con la sua incertezza statistica
+      // (sigma)
+      double smeared = gRandom->Gaus(val, sigma_stat_pdf);
+      bins[i].push_back(smeared);
     }
   }
 
-  delete f_norm;  // pulizia (allocazione dinamica nel metodo GetNormalizedFunction())
+  delete f_norm;  // pulizia (allocazione dinamica nel metodo
+                  // GetNormalizedFunction())
 
   std::vector<double> x(Bins), y(Bins), ex(Bins, 0), ey(Bins);
 
@@ -181,13 +157,11 @@ TGraphErrors* MCgenerator::GraphBinSmeering(int N_replicas) {
     y[i] = mean;
     ey[i] = stddev;
   }
-
   auto* graph = new TGraphErrors(Bins, &x[0], &y[0], &ex[0], &ey[0]);
   graph->SetTitle(
       "Bin-smeering: fluttuazione teorica (3.3); x; Conteggio medio");
   graph->SetMarkerStyle(21);
   graph->SetLineColor(kGreen + 2);
-
   return graph;
 }
 
@@ -253,33 +227,23 @@ TGraphErrors* MCgenerator::GraphParamUncertainty_33(int N_replicas) {
   std::vector<std::vector<double>> bins(Bins);
   TRandom3 rnd(0);
 
-  double dk = 0.02 * k;
-  double dteta = 0.05 * teta;
-  double db = 0.01 * b;
-
   for (int r = 0; r < N_replicas; ++r) {
-    // fluttua i parametri
+    // faccio fluttuare i parametri con gaussiana
     double k_smeared = rnd.Gaus(k, dk);
     double teta_smeared = rnd.Gaus(teta, dteta);
     double b_smeared = rnd.Gaus(b, db);
 
-    // crea funzione temporanea
-    TF1 temp_func("temp_func",
-                  "TMath::Power(TMath::Cos([0] * x + [1]), 2) + [2]", x_min,
-                  x_max);
-    temp_func.SetParameters(k_smeared, teta_smeared, b_smeared);
-
-    // normalizza la funzione
-    double integral = temp_func.Integral(x_min, x_max);
-    if (integral == 0) integral = 1;
-    double scale = 1.0 / integral;
+    // crea funzione temporanea con parametri "che fluttuano"
+    TF1* temp_func =
+        GetNormalizedFunction(k_smeared, teta_smeared, b_smeared, x_min, x_max);
 
     // calcola valori fluttuati
     for (int i = 0; i < Bins; ++i) {
       double x_val = x_min + (i + 0.5) * (x_max - x_min) / Bins;
-      double val = temp_func.Eval(x_val);
-      bins[i].push_back(val * scale);  // store normalized value
+      double val = temp_func->Eval(x_val);  // valore al centro del bin
+      bins[i].push_back(val);  // vettore con valori al centro del bin
     }
+    delete temp_func;
   }
 
   // calcola media e stddev
@@ -289,7 +253,7 @@ TGraphErrors* MCgenerator::GraphParamUncertainty_33(int N_replicas) {
   for (int i = 0; i < Bins; ++i) {
     double sum = 0, sum2 = 0;
     for (double v : bins[i]) {
-      sum += v;
+      sum += v;  // somma dei valori nelle varie generazioni nel bin i
       sum2 += v * v;
     }
     double mean = sum / N_replicas;
