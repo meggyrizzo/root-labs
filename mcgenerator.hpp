@@ -19,6 +19,11 @@ class MCgenerator {
   double teta;
   double b;
 
+// incertezze sui parametri (Punto 4)
+    double dk;
+    double dteta;
+    double db;
+
   // intervallo di generazione
   double x_min;
   double x_max;
@@ -44,7 +49,6 @@ class MCgenerator {
   void CreateHistogram(const char* name = "h", const char* title = "myHisto");
   TH1D* GetHistogram() const;  // per accedere all'istogramma
   TH1D* Fillh();               // riempe istogramma
-  TF1* GetNormalizedFunction() const;
   double GetRMSD()
       const;  // ritorna la radice quadrata della media degli scarti al quadrato
 
@@ -52,7 +56,7 @@ class MCgenerator {
   TGraphErrors* GraphMeanWithError(int N_replicas);
 
   // pto 3.3
-  TGraphErrors* GraphBinSmeering(int N_replicas, double smear_fraction = 0.05);
+  TGraphErrors* GraphBinSmeering(int N_replicas);
 
   // pto 4(3.2)
   TGraphErrors* GraphParamUncertainty_32(int N_replicas);

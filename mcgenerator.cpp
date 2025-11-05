@@ -9,8 +9,9 @@
 #include <TStyle.h>  // per gRandom
 
 #include <iostream>
-#include <string>
 #include <vector>
+
+#include "functions.hpp"
 
 MCgenerator::MCgenerator(int N_val, int Bins_val, double k_val, double teta_val,
                          double b_val, double x_min_val, double x_max_val)
@@ -22,6 +23,12 @@ MCgenerator::MCgenerator(int N_val, int Bins_val, double k_val, double teta_val,
       x_min(x_min_val),
       x_max(x_max_val),
       h(nullptr) {
+
+  // imposto inceretzze sistematiche
+  dk = 0.02 * k;
+  dteta = 0.05 * teta;
+  db = 0.01 * b;
+
   function =
       new TF1("myFunc", "TMath::Power(TMath::Cos([0] * x + [1]), 2) + [2]",
               x_min, x_max);
@@ -64,38 +71,12 @@ TH1D* MCgenerator::Fillh() {
   return h;
 }
 
-TF1* MCgenerator::GetNormalizedFunction() const {
-  // crea una NUOVA funzione, il chiamante deve gestirne la delete
-  TF1* f_norm =
-      new TF1("f_norm_temp", "TMath::Power(TMath::Cos([0] * x + [1]), 2) + [2]",
-              x_min, x_max);
-  f_norm->SetParameters(k, teta, b);
-
-  double integral = f_norm->Integral(x_min, x_max);
-  if (integral > 0) {
-    // per normalizzare la PDF, dobbiamo scalare per 1/integrale
-    // TF1 non lo fa facilmente->creiamo una funzione wrapper.
-    delete f_norm;  // cancella la precedente
-
-    f_norm = new TF1("f_norm_pdf",
-                     "[0]*(TMath::Power(TMath::Cos([1]*x + [2]), 2) + [3])",
-                     x_min, x_max);
-    f_norm->SetParameter(0, 1.0 / integral);  // Fattore di scala
-    f_norm->SetParameter(1, k);
-    f_norm->SetParameter(2, teta);
-    f_norm->SetParameter(3, b);
-  }
-  f_norm->SetLineColor(kRed);
-  return f_norm;
-}
-
 double MCgenerator::GetRMSD() const {
   double sum = 0.0;
   int n_bins = h->GetNbinsX();
 
   // normalizziamo la funzione per il confronto
-  TF1* f_norm = GetNormalizedFunction();
-
+  TF1* f_norm = GetNormalizedFunction(k, teta, b, x_min, x_max);
   // normalizziamo l'istogramma
   TH1D* h_norm = (TH1D*)h->Clone("h_norm_temp");
   h_norm->Scale(1.0 / h_norm->Integral("width"));
@@ -159,25 +140,31 @@ TGraphErrors* MCgenerator::GraphMeanWithError(int N_replicas) {
   return graph;
 }
 
-TGraphErrors* MCgenerator::GraphBinSmeering(int N_replicas,
-                                            double smear_fraction) {
+TGraphErrors* MCgenerator::GraphBinSmeering(int N_replicas) {
   std::vector<std::vector<double>> bins(Bins);
   double bin_width = (x_max - x_min) / Bins;
 
   // usiamo la funzione già normalizzata per il valore teorico
-  TF1* f_norm = GetNormalizedFunction();
+  TF1* f_norm = GetNormalizedFunction(k, teta, b, x_min, x_max);
 
   for (int r = 0; r < N_replicas; ++r) {
     for (int i = 0; i < Bins; ++i) {
       double x = x_min + (i + 0.5) * bin_width;
-      double val = f_norm->Eval(x);
-      double smeared = gRandom->Gaus(val, smear_fraction * val);
-      bins[i].push_back(smeared);
+      double val = f_norm->Eval(x); // valore teorico
+
+      // calcolo incertezza statistica attesa per la pdf
+      double sigma_stat_pdf = 0.0;
+            if (val > 0) { // evita la divisione per zero o sqrt di negativi
+                sigma_stat_pdf = std::sqrt(val / (N * bin_width)); // l'inceretzza statistica 
+            }
+
+            // fluttua il valore teorico (val) con la sua incertezza statistica (sigma)
+            double smeared = gRandom->Gaus(val, sigma_stat_pdf);
+            bins[i].push_back(smeared);
     }
   }
 
-  delete f_norm;  // pulizia (allocazione dinamica nel metodo
-                  // GetNormalizedFunction())
+  delete f_norm;  // pulizia (allocazione dinamica nel metodo GetNormalizedFunction())
 
   std::vector<double> x(Bins), y(Bins), ex(Bins, 0), ey(Bins);
 
@@ -327,7 +314,8 @@ void MCgenerator::DrawFunction(const char* filename) const {
   h_norm->SetTitle("Funzione (norm) vs Istogramma (norm)");
   h_norm->GetYaxis()->SetTitle("PDF");
 
-  TF1* f_scaled = GetNormalizedFunction();  // Ottieni funzione normalizzata
+  TF1* f_scaled = GetNormalizedFunction(
+      k, teta, b, x_min, x_max);  // Ottieni funzione normalizzata
   f_scaled->SetLineColor(kRed);
 
   TCanvas* canvas = new TCanvas("canvas", "Funzione vs Istogramma", 800, 600);
