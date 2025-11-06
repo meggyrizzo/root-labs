@@ -211,3 +211,21 @@ void MCgenerator::DrawFunction(const char* filename) const {
   delete h_norm;    // Pulizia
   delete leg;
 }
+
+/*void MCgenerator::FitHistogram()
+{
+  // Blocca i parametri
+  function->FixParameter(0, k);
+  function->FixParameter(1, teta);
+  function->FixParameter(2, b);
+
+  // Fit
+  h->Fit(function, "RQ"); // R = range, Q = quiet
+
+  // Visualizza
+  TCanvas *c = new TCanvas("fitCanvas", "Fit", 800, 600);
+  h->Draw();
+  function->Draw("SAME");
+  c->SaveAs("fit_result.png");
+  delete c;
+}*/

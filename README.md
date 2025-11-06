@@ -32,7 +32,7 @@ da fare
 
 
 SCHEDA 2
-considerare grafico rigenerazione 
-fit di quello (cambiera sempre)
+considerare grafico rigenerazione (pto 3.2)
+fit di quello (cambiera sempre al variare di N_replicas)
 distanza residuo (cambia al variare della replica)
 variando parametri fit vedi come varia residuo

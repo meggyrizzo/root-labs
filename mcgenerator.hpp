@@ -62,6 +62,7 @@ class MCgenerator {
 
   // pto 1-> disegna funzione ed istogramma a confronto in un unico file
   void DrawFunction(const char* filename) const;
+  // void FitHistogram();
 };
 
 #endif
