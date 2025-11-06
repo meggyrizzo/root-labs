@@ -198,10 +198,6 @@ void MCgenerator::DrawFunction(const char* filename) const {
   TCanvas* canvas = new TCanvas("canvas", "Funzione vs Istogramma", 800, 600);
   h_norm->Draw("HISTO");
   f_scaled->Draw("SAME");
-  TLegend* leg = new TLegend(0.6, 0.8, 0.9, 0.9);
-  leg->AddEntry(h_norm, "Istogramma MC (norm)", "l");
-  leg->AddEntry(f_scaled, "Funzione Teorica (norm)", "l");
-  leg->Draw();
 
   canvas->Update();
   canvas->SaveAs(filename);
@@ -209,7 +205,6 @@ void MCgenerator::DrawFunction(const char* filename) const {
   delete canvas;
   delete f_scaled;  // Pulizia
   delete h_norm;    // Pulizia
-  delete leg;
 }
 
 /*void MCgenerator::FitHistogram()
