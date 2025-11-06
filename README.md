@@ -13,6 +13,7 @@ nel metodo drawfunction l'obbiettivo è generare dopo aver generato un istogramm
 
 
 da fare
+- confronto tra parametri fissi e variabili con emtodo 3.2 e metodo 3.3
 - aggiungere alla "legenda" lo scarto quadratico medio
 - creare file con funzioni media, dev std
 - vedi se da 4 metodi ne riesci a fare due 
@@ -28,3 +29,10 @@ da fare
 
   // pto 4(3.3)
   TGraphErrors* GraphParamUncertainty_33(int N_replicas);)
+
+
+SCHEDA 2
+considerare grafico rigenerazione 
+fit di quello (cambiera sempre)
+distanza residuo (cambia al variare della replica)
+variando parametri fit vedi come varia residuo
