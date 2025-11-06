@@ -2,27 +2,33 @@
 
 #include "mcgenerator.hpp"
 
-/*Stats CalculateStats(int Bins, const std::vector<double>& bin_data, size_t n_replicas) {
-  // calcola media e stddev
+TGraphErrors* CreateGraph(const std::vector<std::vector<double>>& bin_values,
+                          double x_min, double x_max, int Bins,
+                          const char* title, int marker_style, int line_color) {
   std::vector<double> x(Bins), y(Bins), ex(Bins, 0), ey(Bins);
-  double bin_width = (0.5 * TMath::Pi()) / Bins;
+  double bin_width = (x_max - x_min) / Bins;
 
   for (int i = 0; i < Bins; ++i) {
     double sum = 0, sum2 = 0;
-    for (double v : bin_data) {
-      sum += v;  // somma dei valori nelle varie generazioni nel bin i
+    for (double v : bin_values[i]) {
+      sum += v;
       sum2 += v * v;
     }
-    double mean = sum / n_replicas;
-    double stddev = std::sqrt(sum2 / n_replicas - mean * mean);
+    double mean = sum / bin_values[i].size();
+    double stddev = std::sqrt(sum2 / bin_values[i].size() - mean * mean);
 
-    x[i] = (i + 0.5) * bin_width;
+    x[i] = x_min + (i + 0.5) * bin_width;
     y[i] = mean;
-    ey[i] = stddev;  // incertezza propagata
+    ey[i] = stddev;
   }
 
-return Stats;
-}*/
+  auto* graph = new TGraphErrors(Bins, &x[0], &y[0], &ex[0], &ey[0]);
+  graph->SetTitle(title);
+  graph->SetMarkerStyle(marker_style);
+  graph->SetLineColor(line_color);
+  return graph;
+}
+
 // funzione x normalizzare
 TF1* GetNormalizedFunction(double k, double teta, double b, double x_min,
                            double x_max) {
@@ -49,8 +55,6 @@ TF1* GetNormalizedFunction(double k, double teta, double b, double x_min,
   f_norm->SetLineColor(kRed);
   return f_norm;
 }
-
-
 
 /*double GetRMSD() const {
   double sum = 0.0;

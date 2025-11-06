@@ -5,13 +5,14 @@
 #include <TMath.h>
 
 #include <string>
+#include <vector>
 
-struct Stats {
-  double mean;
-  double stddev;
-};
+#include "TGraphErrors.h"
 
-//Stats CalculateStats(const std::vector<double>& bin_data, size_t n_replicas);
+TGraphErrors* CreateGraph(const std::vector<std::vector<double>>& bin_values,
+                          double x_min, double x_max, int Bins,
+                          const char* title, int marker_style, int line_color);
+
 TF1* GetNormalizedFunction(double k, double teta, double b, double x_min,
                            double x_max);
 

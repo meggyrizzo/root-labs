@@ -1,5 +1,8 @@
 # root-labs
 
+per compilare g++ main.cpp mcgenerator.cpp functions.cpp `root-config --cflags --libs` -o runMC
+per eseguire ./runMC
+
 nel metodo drawfunction l'obbiettivo è generare dopo aver generato un istogramma con MC sovrapporlo alla funzione teorica-> devono avere la stessa scala (stessa area sotto la curvatura)
 1. è normalizzato l'istogramma a 1
 2. creo funzione teorica f_norm
@@ -12,7 +15,10 @@ nel metodo drawfunction l'obbiettivo è generare dopo aver generato un istogramm
 da fare
 - aggiungere alla "legenda" lo scarto quadratico medio
 - creare file con funzioni media, dev std
-- vedi se da 4 metodi ne riesci a fare due (TGraphErrors* GraphMeanWithError(int N_replicas);
+- vedi se da 4 metodi ne riesci a fare due 
+  
+  // pto 3.2
+  (TGraphErrors* GraphMeanWithError(int N_replicas);
 
   // pto 3.3
   TGraphErrors* GraphBinSmeering(int N_replicas, double smear_fraction = 0.05);

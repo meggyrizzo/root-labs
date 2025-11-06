@@ -43,9 +43,7 @@ class MCgenerator {
 
   ~MCgenerator();            // distruttore
 
-  
-  TF1* GetFunction() const;  // per accedere alla funione private da fuori,
-                             // forse è superfluo...
+  TF1* GetFunction() const;  // per accedere alla funione private da fuori
   void CreateHistogram(const char* name = "h", const char* title = "myHisto");
   TH1D* GetHistogram() const;  // per accedere all'istogramma
   TH1D* Fillh();               // riempe istogramma
