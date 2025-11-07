@@ -26,6 +26,8 @@ SCHEDA 2
 1. mostrare nel plot le incertezze-> si vede gia dalle barre di errore
 2. stampare le incertezze su file o terminale, da fare
 io l'ho inteso come uno stampare media e dev standard per ogni bin per ogni grafico-> ho creato 4 file di output uno per ogni TGraphError dove sono indicati per ogni bin il valore della media e della deviazione standard 
+3. fit funzione a parametri fissati partendo dal TGraphErrors del punto 3.2 -> funzione lo trasforma in TH1D -> fit -> calcolo residui (pto 4) tra fit e distribuzione -> si può visualizzare tutto nello stesso canvas in graphs/fit_from_graph.png 
+5. 
 -------------------------------------------------------------------
 ora considero davvero solo il grafico generato nel punto 3.2 (con incertezza da rigenerazione e con parametri k, b, teta senza incertezza)
 -> fit di quello a parametri fissi + calcolare resido (cambiera sempre al variare di N_replicas)
