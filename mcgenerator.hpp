@@ -13,16 +13,21 @@
 #include <iostream>
 #include <vector>
 
+class FitAnalyzer;
+
 class MCgenerator {
+  friend class FitAnalyzer;  // cosi puo accedere ai membri private e cosi
+                             // MCgenerator ha un amico
+
  private:
   double k;
   double teta;
   double b;
 
-// incertezze sui parametri (Punto 4)
-    double dk;
-    double dteta;
-    double db;
+  // incertezze sui parametri (Punto 4)
+  double dk;
+  double dteta;
+  double db;
 
   // intervallo di generazione
   double x_min;
@@ -41,7 +46,7 @@ class MCgenerator {
               double teta_val = 1.8, double b_val = 0.2, double x_min_val = 0,
               double x_max_val = 0.5 * TMath::Pi());
 
-  ~MCgenerator();            // distruttore
+  ~MCgenerator();  // distruttore
 
   TF1* GetFunction() const;  // per accedere alla funione private da fuori
   void CreateHistogram(const char* name = "h", const char* title = "myHisto");

@@ -1,6 +1,7 @@
 #include "functions.hpp"
 
 #include <fstream>
+#include <iomanip>
 
 #include "mcgenerator.hpp"
 
@@ -28,7 +29,8 @@ TGraphErrors* CreateGraph(const std::vector<std::vector<double>>& bin_values,
       std::ofstream out(output_filename);
       out << "# Bin\tMedia\tDev_Std\n";
       for (int i = 0; i < Bins; ++i) {
-        out << i << "\t" << y[i] << "\t" << ey[i] << "\n";
+        out << i << "\t" << std::fixed << std::setprecision(6) << y[i] << "\t"
+            << ey[i] << "\n";
       }
       out.close();
     }
@@ -39,6 +41,24 @@ TGraphErrors* CreateGraph(const std::vector<std::vector<double>>& bin_values,
   graph->SetMarkerStyle(marker_style);
   graph->SetLineColor(line_color);
   return graph;
+}
+
+// per convertire un oggetto TGraphErrors in un istogramam
+TH1D* ConvertGraphToHistogram(TGraphErrors* graph, int Bins, double x_min,
+                              double x_max, const char* title) {
+  TH1D* histo_from_graph = new TH1D("h_from_graph", title, Bins, x_min, x_max);
+  double bin_width = (x_max - x_min) / Bins;  // calcolo larghezza bin
+
+  for (int i = 0; i < graph->GetN();  // ciclo su tutti i pti del TGraphErrors
+       ++i) {
+    double x = graph->GetX()[i];  // estrae coordinata x del pto i-esimo
+    double y = graph->GetY()[i];  // estrae coordinata y del pto i-esimo
+    int bin = histo_from_graph->FindBin(
+        x);  // trova bin istogramma corrispondente alla posizione x
+    histo_from_graph->SetBinContent(
+        bin, y);  // imposta altezza al valore y corrispondente
+  }
+  return histo_from_graph;
 }
 
 // funzione x normalizzare
