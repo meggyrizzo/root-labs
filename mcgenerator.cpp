@@ -5,8 +5,9 @@
 #include <TGraphErrors.h>
 #include <TH1D.h>
 #include <TLegend.h>
+#include <TRandom.h>
 #include <TRandom3.h>
-#include <TStyle.h>  // per gRandom
+#include <TStyle.h>
 
 #include <iostream>
 #include <vector>
@@ -32,6 +33,10 @@ MCgenerator::MCgenerator(int N_val, int Bins_val, double k_val, double teta_val,
   dk = 0.02 * k;
   dteta = 0.05 * teta;
   db = 0.01 * b;
+
+  if (!gRandom) {
+    gRandom = new TRandom3(0);
+  }
 }
 
 // distruttore
@@ -57,11 +62,10 @@ void MCgenerator::CreateHistogram(const char* name, const char* title) {
 TH1D* MCgenerator::GetHistogram() const { return h; }
 
 TH1D* MCgenerator::Fillh() {
-  TRandom3 rnd(0);
   int n_accept = 0;
   while (n_accept < N) {
-    double x = rnd.Uniform(x_min, x_max);
-    double y = rnd.Uniform(0, 1 + b);
+    double x = gRandom->Uniform(x_min, x_max);
+    double y = gRandom->Uniform(0, 1 + b);
     if (y < function->Eval(x)) {
       h->Fill(x);
       n_accept++;
@@ -131,13 +135,12 @@ TGraphErrors* MCgenerator::GraphBinSmeering(int N_replicas) {
 // pto 4 (metodo 3.2)
 TGraphErrors* MCgenerator::GraphParamUncertainty_32(int N_replicas) {
   std::vector<std::vector<double>> bins(Bins);
-  TRandom3 rnd(0);
 
   for (int r = 0; r < N_replicas; ++r) {
     // fluttua i parametri
-    double k_smeared = rnd.Gaus(k, dk);
-    double teta_smeared = rnd.Gaus(teta, dteta);
-    double b_smeared = rnd.Gaus(b, db);
+    double k_smeared = gRandom->Gaus(k, dk);
+    double teta_smeared = gRandom->Gaus(teta, dteta);
+    double b_smeared = gRandom->Gaus(b, db);
 
     // crea replica della funzione con parametri fluttuati
     MCgenerator replica2(N, Bins, k_smeared, teta_smeared, b_smeared, x_min,
@@ -156,18 +159,18 @@ TGraphErrors* MCgenerator::GraphParamUncertainty_32(int N_replicas) {
     }
   }
   return CreateGraph(bins, x_min, x_max, Bins,
-                     "Prop. Parametri (Rigenerazione, 4a); x; PDF", 20, kRed, "file/output_graph_uncertainty_32");
+                     "Prop. Parametri (Rigenerazione, 4a); x; PDF", 20, kRed,
+                     "file/output_graph_uncertainty_32");
 }
 
 TGraphErrors* MCgenerator::GraphParamUncertainty_33(int N_replicas) {
   std::vector<std::vector<double>> bins_smeared(Bins);
-  TRandom3 rnd(0);
 
   for (int r = 0; r < N_replicas; ++r) {
     // faccio fluttuare i parametri con gaussiana
-    double k_smeared = rnd.Gaus(k, dk);
-    double teta_smeared = rnd.Gaus(teta, dteta);
-    double b_smeared = rnd.Gaus(b, db);
+    double k_smeared = gRandom->Gaus(k, dk);
+    double teta_smeared = gRandom->Gaus(teta, dteta);
+    double b_smeared = gRandom->Gaus(b, db);
 
     // crea funzione temporanea con parametri "che fluttuano"
     TF1* temp_func =
@@ -182,7 +185,8 @@ TGraphErrors* MCgenerator::GraphParamUncertainty_33(int N_replicas) {
     delete temp_func;
   }
   return CreateGraph(bins_smeared, x_min, x_max, Bins,
-                     "Prop. Parametri (Smeering, 4b); x; PDF", 20, kMagenta, "file/output_graph_uncertainty_33");
+                     "Prop. Parametri (Smeering, 4b); x; PDF", 20, kMagenta,
+                     "file/output_graph_uncertainty_33");
 }
 
 void MCgenerator::DrawFunction(const char* filename) const {
@@ -206,21 +210,3 @@ void MCgenerator::DrawFunction(const char* filename) const {
   delete f_scaled;  // Pulizia
   delete h_norm;    // Pulizia
 }
-
-/*void MCgenerator::FitHistogram()
-{
-  // Blocca i parametri
-  function->FixParameter(0, k);
-  function->FixParameter(1, teta);
-  function->FixParameter(2, b);
-
-  // Fit
-  h->Fit(function, "RQ"); // R = range, Q = quiet
-
-  // Visualizza
-  TCanvas *c = new TCanvas("fitCanvas", "Fit", 800, 600);
-  h->Draw();
-  function->Draw("SAME");
-  c->SaveAs("fit_result.png");
-  delete c;
-}*/
