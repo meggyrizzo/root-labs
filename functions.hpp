@@ -11,7 +11,8 @@
 
 TGraphErrors* CreateGraph(const std::vector<std::vector<double>>& bin_values,
                           double x_min, double x_max, int Bins,
-                          const char* title, int marker_style, int line_color);
+                          const char* title, int marker_style, int line_color,
+                          const char* output_filename = nullptr);
 
 TF1* GetNormalizedFunction(double k, double teta, double b, double x_min,
                            double x_max);

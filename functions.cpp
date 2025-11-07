@@ -1,10 +1,13 @@
 #include "functions.hpp"
 
+#include <fstream>
+
 #include "mcgenerator.hpp"
 
 TGraphErrors* CreateGraph(const std::vector<std::vector<double>>& bin_values,
                           double x_min, double x_max, int Bins,
-                          const char* title, int marker_style, int line_color) {
+                          const char* title, int marker_style, int line_color,
+                          const char* output_filename) {
   std::vector<double> x(Bins), y(Bins), ex(Bins, 0), ey(Bins);
   double bin_width = (x_max - x_min) / Bins;
 
@@ -20,6 +23,15 @@ TGraphErrors* CreateGraph(const std::vector<std::vector<double>>& bin_values,
     x[i] = x_min + (i + 0.5) * bin_width;
     y[i] = mean;
     ey[i] = stddev;
+
+    if (output_filename) {
+      std::ofstream out(output_filename);
+      out << "# Bin\tMedia\tDev_Std\n";
+      for (int i = 0; i < Bins; ++i) {
+        out << i << "\t" << y[i] << "\t" << ey[i] << "\n";
+      }
+      out.close();
+    }
   }
 
   auto* graph = new TGraphErrors(Bins, &x[0], &y[0], &ex[0], &ey[0]);

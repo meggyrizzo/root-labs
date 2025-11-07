@@ -3,6 +3,7 @@
 per compilare g++ main.cpp mcgenerator.cpp functions.cpp `root-config --cflags --libs` -o runMC
 per eseguire ./runMC
 
+SCHEDA 1
 nel metodo drawfunction l'obbiettivo è generare dopo aver generato un istogramma con MC sovrapporlo alla funzione teorica-> devono avere la stessa scala (stessa area sotto la curvatura)
 1. è normalizzato l'istogramma a 1
 2. creo funzione teorica f_norm
@@ -15,23 +16,14 @@ nel metodo drawfunction l'obbiettivo è generare dopo aver generato un istogramm
 da fare
 - confronto tra parametri fissi e variabili con emtodo 3.2 e metodo 3.3
 - aggiungere alla "legenda" lo scarto quadratico medio
-- creare file con funzioni media, dev std
-- vedi se da 4 metodi ne riesci a fare due 
-  
-  // pto 3.2
-  (TGraphErrors* GraphMeanWithError(int N_replicas);
-
-  // pto 3.3
-  TGraphErrors* GraphBinSmeering(int N_replicas, double smear_fraction = 0.05);
-
-  // pto 4(3.2)
-  TGraphErrors* GraphParamUncertainty_32(int N_replicas);
-
-  // pto 4(3.3)
-  TGraphErrors* GraphParamUncertainty_33(int N_replicas);)
+- creare file con funzioni usate piu volte
 
 
 SCHEDA 2
+1. mostrare nel plot le incertezze-> si vede gia dalle barre di errore
+2. stampare le incertezze su file o terminale, da fare
+io l'ho inteso come uno stampare media e dev standard per ogni bin per ogni grafico-> ho creato 4 file di output uno per ogni TGraphError dove sono indicati per ogni bin il valore della media e della deviazione standard 
+
 considerare grafico rigenerazione (pto 3.2)
 fit di quello (cambiera sempre al variare di N_replicas)
 distanza residuo (cambia al variare della replica)

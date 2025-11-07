@@ -91,7 +91,7 @@ TGraphErrors* MCgenerator::GraphMeanWithError(int N_replicas) {
 
   return CreateGraph(bins, x_min, x_max, Bins,
                      "Incertezza da Rigenerazione (3.2); x; PDF media", 20,
-                     kBlue);
+                     kBlue, "file/output_graph_32");
 }
 
 // pto 3.3
@@ -125,7 +125,7 @@ TGraphErrors* MCgenerator::GraphBinSmeering(int N_replicas) {
   return CreateGraph(
       bins_smeared, x_min, x_max, Bins,
       "Bin-smeering: fluttuazione teorica (3.3); x; Conteggio medio", 20,
-      kGreen);
+      kGreen, "file/output_graph_33");
 }
 
 // pto 4 (metodo 3.2)
@@ -156,7 +156,7 @@ TGraphErrors* MCgenerator::GraphParamUncertainty_32(int N_replicas) {
     }
   }
   return CreateGraph(bins, x_min, x_max, Bins,
-                     "Prop. Parametri (Rigenerazione, 4a); x; PDF", 20, kRed);
+                     "Prop. Parametri (Rigenerazione, 4a); x; PDF", 20, kRed, "file/output_graph_uncertainty_32");
 }
 
 TGraphErrors* MCgenerator::GraphParamUncertainty_33(int N_replicas) {
@@ -182,7 +182,7 @@ TGraphErrors* MCgenerator::GraphParamUncertainty_33(int N_replicas) {
     delete temp_func;
   }
   return CreateGraph(bins_smeared, x_min, x_max, Bins,
-                     "Prop. Parametri (Smeering, 4b); x; PDF", 20, kMagenta);
+                     "Prop. Parametri (Smeering, 4b); x; PDF", 20, kMagenta, "file/output_graph_uncertainty_33");
 }
 
 void MCgenerator::DrawFunction(const char* filename) const {
