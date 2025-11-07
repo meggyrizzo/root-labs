@@ -23,12 +23,9 @@ void FitAnalyzer::FitFixedParametersFromGraph(TGraphErrors* graph,
   // creo la funzione di fit con i parametri originali gia normalizzata
   fit_function = GetNormalizedFunction(mcgen.k, mcgen.teta, mcgen.b,
                                        mcgen.x_min, mcgen.x_max);
-
   fit_function->SetLineColor(kBlack);
-
   // eseguo il fit sull'istogramma ottenuto dal TGraphErrors
   h->Fit(fit_function, "R");
-
   // calcolo residuo
   TH1D* h_residuals = new TH1D("h_residuals", "Residui: h_i - f(x_i)",
                                mcgen.Bins, mcgen.x_min, mcgen.x_max);

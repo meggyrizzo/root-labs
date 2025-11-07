@@ -111,23 +111,18 @@ TGraphErrors* MCgenerator::GraphBinSmeering(int N_replicas) {
         sigma_stat_pdf = std::sqrt(
             val / (N * bin_width));  // l'inceretzza statistica è la dev std
       }
-
-      // fluttua il valore teorico (val) con la sua incertezza statistica
-      // (sigma)
+      // fluttua il valore teorico (val) con la sua incertezza statistica (sigma)
       double smeared = gRandom->Gaus(val, sigma_stat_pdf);
       bins_smeared[i].push_back(smeared);
     }
   }
-
   delete f_norm;  // pulizia (allocazione dinamica nel metodo
                   // GetNormalizedFunction())
-
   return CreateGraph(
       bins_smeared, x_min, x_max, Bins,
       "Bin-smeering: fluttuazione teorica (3.3); x; Conteggio medio", 20,
       kGreen, "file_output/output_graph_33");
 }
-
 // pto 4 (metodo 3.2)
 TGraphErrors* MCgenerator::GraphParamUncertainty_32(int N_replicas) {
   std::vector<std::vector<double>> bins(Bins);
