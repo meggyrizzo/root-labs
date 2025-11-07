@@ -7,6 +7,7 @@ per eseguire:
 ./runMC
 
 SCHEDA 1
+pto 1
 nel metodo drawfunction l'obbiettivo è generare dopo aver generato un istogramma con MC sovrapporlo alla funzione teorica-> devono avere la stessa scala (stessa area sotto la curvatura)
 1. è normalizzato l'istogramma a 1
 2. creo funzione teorica f_norm

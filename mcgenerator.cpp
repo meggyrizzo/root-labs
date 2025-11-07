@@ -33,10 +33,6 @@ MCgenerator::MCgenerator(int N_val, int Bins_val, double k_val, double teta_val,
   dk = 0.02 * k;
   dteta = 0.05 * teta;
   db = 0.01 * b;
-
-  if (!gRandom) {
-    gRandom = new TRandom3(0);
-  }
 }
 
 // distruttore

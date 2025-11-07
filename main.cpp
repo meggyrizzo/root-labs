@@ -8,6 +8,10 @@
 #include "mcgenerator.hpp"
 
 int main() {
+  if (!gRandom) {
+    gRandom = new TRandom3(0);
+  }
+  gRandom->SetSeed(time(NULL));
   // prova 1
   MCgenerator main_generation(10000, 100);
   main_generation.GetFunction();
@@ -21,6 +25,7 @@ int main() {
   graph->Draw("AP");
   c->SaveAs("graphs/regeneration_histo.png");
 
+  // SCHEDA 2 punti 3 e 4
   FitAnalyzer analyzer(main_generation);
   // fit a parametri fissi e disegno con residui
   analyzer.FitFixedParametersFromGraph(graph,

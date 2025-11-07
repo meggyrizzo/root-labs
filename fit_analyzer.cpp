@@ -36,7 +36,7 @@ void FitAnalyzer::FitFixedParametersFromGraph(TGraphErrors* graph,
     double x = h->GetBinCenter(i);
     double h_i = h->GetBinContent(i);
     double f_xi = fit_function->Eval(x);
-    h_residuals->SetBinContent(i, h_i - f_xi);
+    h_residuals->SetBinContent(i, std::abs(h_i - f_xi));
   }
   h_residuals->SetLineColor(kRed);
   h_residuals->GetYaxis()->SetTitle("Residue");
