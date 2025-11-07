@@ -3,6 +3,8 @@
 #include <TGraphErrors.h>
 #include <TLegend.h>
 
+#include "fit_analyzer.hpp"
+#include "functions.hpp"
 #include "mcgenerator.hpp"
 
 int main() {
@@ -19,8 +21,13 @@ int main() {
   graph->Draw("AP");
   c->SaveAs("graphs/regeneration_histo.png");
 
-  
-  TGraphErrors* smear_graph = main_generation.GraphBinSmeering(50);  // 100 repliche
+  FitAnalyzer analyzer(main_generation);
+  // fit a parametri fissi e disegno con residui
+  analyzer.FitFixedParametersFromGraph(graph,
+                                       "Distribuzione media da rigenerazione");
+
+  TGraphErrors* smear_graph =
+      main_generation.GraphBinSmeering(50);  // 100 repliche
   smear_graph->SetMarkerColor(kGreen + 2);
   TCanvas* c_smear = new TCanvas("c_smear", "Bin-smeering", 800, 600);
   smear_graph->Draw("AP");

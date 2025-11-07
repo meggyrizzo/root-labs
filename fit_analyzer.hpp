@@ -13,11 +13,20 @@
    esegue il fit a parametri
    fissi e liberi sul grafico 3.2
    e calcola i residui per valutare la bontà
-   dell'accordo*/
+   dell'accordo */
 
 class FitAnalyzer {
+ private:
+  MCgenerator& mcgen;  // riferimento all'oggetto specifico da analizzare (sarà
+                       // questo credo: TGraphErrors* graph =
+                       // main_generation.GraphMeanWithError(50); che è generato
+                       // nella main generation del main)
+  TF1* fit_function;   // puntatore alla funzione di fit da riutilizzare
+
  public:
-  FitAnalyzer();  // costruttore
+  FitAnalyzer(MCgenerator& generation);  // costruttore
+  ~FitAnalyzer();                        // distruttore
+  void FitFixedParametersFromGraph(TGraphErrors* graph, const char* title);
 };
 
 #endif
