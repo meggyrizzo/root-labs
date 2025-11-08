@@ -30,6 +30,12 @@ int main() {
   // fit a parametri fissi e disegno con residui
   analyzer.FitFixedParametersFromGraph(graph,
                                        "Distribuzione media da rigenerazione");
+  FitAnalyzer analyzerk(main_generation);
+  analyzerk.FitWithOneParameterVaried("k", graph, "Fit con k variato");
+  FitAnalyzer analyzerteta(main_generation);
+  analyzerteta.FitWithOneParameterVaried("teta", graph, "Fit con teta variato");
+  FitAnalyzer analyzerb(main_generation);
+  analyzerb.FitWithOneParameterVaried("b", graph, "Fit con b variato");
 
   TGraphErrors* smear_graph =
       main_generation.GraphBinSmeering(50);  // 100 repliche

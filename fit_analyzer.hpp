@@ -27,6 +27,8 @@ class FitAnalyzer {
   FitAnalyzer(MCgenerator& generation);  // costruttore
   ~FitAnalyzer();                        // distruttore
   void FitFixedParametersFromGraph(TGraphErrors* graph, const char* title);
+  void FitWithOneParameterVaried(const char* param_name, TGraphErrors* graph,
+                                 const char* title);
 };
 
 #endif

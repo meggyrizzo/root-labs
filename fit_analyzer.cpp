@@ -52,3 +52,54 @@ void FitAnalyzer::FitFixedParametersFromGraph(TGraphErrors* graph,
   delete h;
   delete h_residuals;
 }
+
+void FitAnalyzer::FitWithOneParameterVaried(const char* param_name,
+                                            TGraphErrors* graph,
+                                            const char* title) {
+  double k_var = mcgen.k;
+  double teta_var = mcgen.teta;
+  double b_var = mcgen.b;
+
+  if (param_name == "k") {
+    k_var = mcgen.k + gRandom->Uniform(-1.0, 1.0);
+  } else if (param_name == "teta") {
+    teta_var = mcgen.teta + gRandom->Uniform(-1.0, 1.0);
+  } else if (param_name == "b") {
+    b_var = mcgen.b + gRandom->Uniform(-1.0, 1.0);
+  }
+
+  TH1D* h = ConvertGraphToHistogram(graph, mcgen.Bins, mcgen.x_min, mcgen.x_max,
+                                    title);
+  fit_function =
+      GetNormalizedFunction(k_var, teta_var, b_var, mcgen.x_min, mcgen.x_max);
+  fit_function->SetLineColor(kMagenta + 2);
+
+  h->Fit(fit_function, "R");
+
+  TH1D* h_residuals = new TH1D("h_residuals_var", "Residui: h_i - f(x_i)",
+                               mcgen.Bins, mcgen.x_min, mcgen.x_max);
+  for (int i = 1; i <= mcgen.Bins; ++i) {
+    double x = h->GetBinCenter(i);
+    double h_i = h->GetBinContent(i);
+    double f_xi = fit_function->Eval(x);
+    h_residuals->SetBinContent(i, std::abs(h_i - f_xi));
+  }
+  h_residuals->SetLineColor(kRed);
+  h_residuals->GetYaxis()->SetTitle("Residuo");
+
+  TCanvas* c = new TCanvas("c_fit_var", "Fit con parametro variato", 800, 800);
+  c->Divide(1, 2);
+
+  c->cd(1);
+  h->Draw("HIST");
+  fit_function->Draw("SAME");
+
+  c->cd(2);
+  h_residuals->Draw("HIST");
+
+  c->SaveAs("graphs/fit_param_varied.png");
+
+  delete c;
+  delete h;
+  delete h_residuals;
+}
